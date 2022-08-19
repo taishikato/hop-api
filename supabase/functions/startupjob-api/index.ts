@@ -4,17 +4,16 @@
 
 import { serve } from "https://deno.land/std@0.131.0/http/server.ts";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey",
+};
 const API_KEY = Deno.env.get("STARTUPJOB_API_KEY");
 
 serve(async (req) => {
   // For browser call
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "authorization, x-client-info, apikey",
-      },
-    });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   const result = await fetch(
@@ -22,6 +21,6 @@ serve(async (req) => {
   ).then((res) => res.json());
 
   return new Response(JSON.stringify(result), {
-    headers: { "Content-Type": "application/json" },
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
