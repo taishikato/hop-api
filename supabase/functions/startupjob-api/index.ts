@@ -1,7 +1,3 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
 // @ts-ignore
 import { serve } from "https://deno.land/std@0.131.0/http/server.ts";
 
@@ -9,6 +5,8 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey",
 };
+
+const POSTS_API = Deno.env.get("STARTUPJOB_POSTS_API");
 const API_KEY = Deno.env.get("STARTUPJOB_API_KEY");
 
 serve(async (req) => {
@@ -17,8 +15,16 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  const { tags }: { tags: string[] | null | undefined } = await req.json();
+
+  if (tags == null || !Array.isArray(tags) || tags.length === 0)
+    return new Response(JSON.stringify({ error: "No tags param" }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 400,
+    });
+
   const result = await fetch(
-    `https://api.startup.jobs/v1/posts?key=${API_KEY}&tag=react&limit=1`
+    `${POSTS_API}?key=${API_KEY}&tag=${tags.join(",")}&limit=1`
   ).then((res) => res.json());
 
   return new Response(JSON.stringify(result), {
