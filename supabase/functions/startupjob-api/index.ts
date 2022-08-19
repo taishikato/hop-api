@@ -7,6 +7,16 @@ import { serve } from "https://deno.land/std@0.131.0/http/server.ts";
 const API_KEY = Deno.env.get("STARTUPJOB_API_KEY");
 
 serve(async (req) => {
+  // For browser call
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "authorization, x-client-info, apikey",
+      },
+    });
+  }
+
   const result = await fetch(
     `https://api.startup.jobs/v1/posts?key=${API_KEY}&tag=react&limit=1`
   ).then((res) => res.json());
