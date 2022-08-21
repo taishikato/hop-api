@@ -24,7 +24,7 @@ serve(async (req) => {
     });
 
   const result = await fetch(
-    `${POSTS_API}?key=${API_KEY}&tag=${tags.join(",")}&limit=10`
+    `${POSTS_API}?key=${API_KEY}&tag=${tags.join(",")}&limit=50`
   ).then((res) => res.json());
 
   return new Response(JSON.stringify(result), {
